@@ -25,9 +25,14 @@ def show_score(x,y):
     score = font.render('Score: ' + str(coin_int), True, (255, 255, 255))
     display.blit(score, (x, y))
 
+pygame.mixer.music.load('BG-Music.wav')
+pygame.mixer.music.play(-1)
+
 # -- Game Images -- #
-# Clembod
-player_image = pygame.image.load('warrior/Individual_Sprite/idle/Warrior_Idle_1.png')
+# My Images
+player_image = pygame.image.load('player/idleRight/player_0.png')
+position = 'right'
+slime_image = pygame.image.load('slime/slime_0.png')
 
 # IconArchive
 coin_image = pygame.image.load('tiles/coin.png')
@@ -95,21 +100,47 @@ player_rect = pygame.Rect(50, 50, player_image.get_width(), player_image.get_hei
 coins = []
 coin_int = 0
 
+slimes = []
+
 y=0
 for row in game_map:
         x = 0
         for tile in row:
             if tile == 'C':
                 coins.append([x*TILE_SIZE,y*TILE_SIZE])
+            if tile == 'S':
+                slimes.append([x*TILE_SIZE,y*TILE_SIZE + 16])
             x+=1
         y+=1
+
+spriteSpeed = 5
+spriteLoop = 0
+moveSprite = 0
+idleSprite = 0
+slimeSprite = 0
+
+def playerSprite(position ='right', moving_right=False, moving_left=False, moveSprite = 0, idleSprite = 0):
+    if position == 'right':
+        if moving_right:
+            image= pygame.image.load('player/moveRight/moveRight_' + str(moveSprite) + '.png')
+        else:
+            image= pygame.image.load('player/idleRight/player_' + str(idleSprite) + '.png')
+    if position == 'left':
+        if moving_left:
+            image= pygame.image.load('player/moveLeft/moveLeft_' + str(moveSprite) + '.png')
+        else:
+            image= pygame.image.load('player/idleLeft/idleLeft_' + str(idleSprite) + '.png')
+    return image
+def enemySprite(slimeSprite):
+    image= pygame.image.load('slime/slime_' + str(slimeSprite) + '.png')
+    return image
 
 # -- Game Loop -- #
 while True:
     # Setting the Screen
     display.fill((146,244,255))
 
-    scroll[0] += (player_rect.x-scroll[0]-197)/20
+    scroll[0] += (player_rect.x-scroll[0]-220)/20
     scroll[1] += (player_rect.y-scroll[1]-150)/20
 
     tile_rects = []
@@ -121,7 +152,7 @@ while True:
                 display.blit(dirt_image, (x*TILE_SIZE-scroll[0], y*TILE_SIZE-scroll[1]))
             if tile == '2':
                 display.blit(grass_image, (x*TILE_SIZE-scroll[0], y*TILE_SIZE-scroll[1]))
-            if tile != '0' and tile !='C':
+            if tile != '0' and tile !='C' and tile !='S':
                 tile_rects.append(pygame.Rect(x*TILE_SIZE, y*TILE_SIZE, TILE_SIZE, TILE_SIZE))
             x += 1
         y += 1
@@ -133,6 +164,13 @@ while True:
             coins.remove(coin)
             pygame.mixer.Sound('pickupCoin.wav').play()
             coin_int += 1
+
+    for slime in slimes:
+        display.blit(slime_image, (slime[0]-scroll[0], slime[1]-scroll[1]))
+        slime_rect = pygame.Rect((slime[0], slime[1],16,16))
+        if player_rect.colliderect(slime_rect):
+            slimes.remove(slime)
+            coin_int -= 1
 
     # Movement 
     player_movement = [0, 0]
@@ -169,8 +207,10 @@ while True:
         if event.type == KEYDOWN:
             if event.key == K_RIGHT:
                 moving_right = True
+                position = 'right'
             if event.key == K_LEFT:
                 moving_left = True
+                position = 'left'
             if event.key == K_UP:
                 if air_timer < 6:
                     player_velocity = -6
@@ -180,6 +220,21 @@ while True:
             if event.key == K_LEFT:
                 moving_left = False
 
+    spriteLoop += spriteSpeed
+    if spriteLoop >= 60:
+        spriteLoop = 0
+        moveSprite += 1
+        idleSprite += 1
+        slimeSprite += 1
+        if moveSprite >= 4:
+            moveSprite = 0
+        if idleSprite >= 8:
+            idleSprite = 0
+        if slimeSprite >= 5:
+            slimeSprite = 0
+        
+        player_image = playerSprite(position, moving_right, moving_left, moveSprite, idleSprite)
+        slime_image = enemySprite(slimeSprite)
     # Scaled Screen
     surf = pygame.transform.scale(display, WINDOW_SIZE)
     screen.blit(surf, (0, 0))
