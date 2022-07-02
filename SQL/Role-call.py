@@ -1,7 +1,7 @@
 import sqlite3
 from sqlite3 import Error
 
-
+#creates a connection to the database
 def create_connection(db_file):
     """ create a database connection to a SQLite database """
     conn = None
@@ -12,6 +12,7 @@ def create_connection(db_file):
         print(e)
     return conn
 
+#creates a table if it doesn't already exist
 def create_table(conn, create_table_sql):
     """ create a table from the create_table_sql statement
     :param conn: Connection object
@@ -24,6 +25,7 @@ def create_table(conn, create_table_sql):
     except Error as e:
         print(e)
 
+# keeps track of the next id for the table
 def get_next_id(conn):
     studentList = []
     cursor = conn.execute("SELECT name from STUDENTS;")
@@ -34,6 +36,7 @@ def get_next_id(conn):
     else:
         return len(studentList) + 1
 
+#ensures a correct input for attendance
 def presence_input(name):
     presence = input(f'{name}\n1. Present\n2. Absent\n')
     if presence == '1':
@@ -45,6 +48,7 @@ def presence_input(name):
         presence = presence_input(name)
     return presence
 
+# loops through a student list and applies their attendance record to the database
 def takerole(conn):
     studentList = []
     cursor = conn.execute("SELECT name from STUDENTS;")
@@ -55,6 +59,7 @@ def takerole(conn):
         conn.execute(f"UPDATE STUDENTS set ATTENDANCE = '{presence}' where ID ={n};")
     print('Attendance complete')
 
+# alphebetizes the list of students
 def reorder(conn):
     studentList = []
     cursor = conn.execute("SELECT name from STUDENTS;")
@@ -64,6 +69,17 @@ def reorder(conn):
     for n in range(1,len(studentList)+1):
         conn.execute(f"UPDATE STUDENTS set NAME = '{studentList[n-1]}' where ID ={n};")
 
+# displays the list of students
+def list_students(conn):
+    count = 1
+    cursor = conn.execute("SELECT name from STUDENTS;")
+    print('\n')
+    for student in cursor:
+        print(f'{count}. {student[0]}')
+        count +=1
+    print('\n')
+
+# adds a new student to the database
 def insert_student(conn, id):
     name = input('Enter students name: ').title()
     conn.execute(f"INSERT INTO STUDENTS (ID, NAME, ATTENDANCE) \
@@ -71,6 +87,7 @@ def insert_student(conn, id):
     reorder(conn)
     conn.commit()
 
+# removes a student from the database
 def delete_student(conn):
     name = input('Enter students name: ').title()
     studentList = []
@@ -110,9 +127,9 @@ def main():
     stop = 'nope'
     next_id = get_next_id(conn)
 
-    print('Welcome to rolecall!')
+    print('Welcome to rolecall!\n')
     while stop == 'nope':
-        user_selection = input('1. Add Student\n2. Remove Student\n3. Take Attendance\n4. Quit\n')
+        user_selection = input('1. Add Student\n2. Remove Student\n3. Take Attendance\n4. List Students\n5. Quit\n')
         if user_selection == '1':
             insert_student(conn, next_id)
             next_id += 1
@@ -122,10 +139,12 @@ def main():
         elif user_selection == '3':
             takerole(conn)
         elif user_selection == '4':
+            list_students(conn)
+        elif user_selection == '5':
             conn.close()
             stop = 'yep'
         else:
-            print('Please select a number between 1 and 4')
+            print('Please select a number between 1 and 5')
 
 if __name__ == '__main__':
     main()

@@ -1,36 +1,31 @@
 # Overview
 
-{Important!  Do not say in this section that this is college assignment.  Talk about what you are trying to accomplish as a software engineer to further your learning.}
+This program is one for taking attendance.Using SQL databases I made it possible to add and remove students from the role, and take attendance.
 
-{Provide a description the software that you wrote and how it integrates with a SQL Relational Database. Describe how to use your program.}
+In my busy schedule I was able to find 3 days to work on this. The purpose of this code was to see how far I could get with SQL in that time frame having never learned about it previously.
 
-{Describe your purpose for writing this software.}
-
-{Provide a link to your YouTube demonstration.  It should be a 4-5 minute demo of the software running, a walkthrough of the code, and a view of how created the Relational Database.}
-
-[Software Demo Video](http://youtube.link.goes.here)
+[Software Demo Video](https://youtu.be/CQCjjW1GoJE)
 
 # Relational Database
 
-{Describe the relational database you are using.}
-
-{Describe the structure (tables) of the relational database that you created.}
+I created a database with three columns. one with an order ID, one for the students name, and one for their attendance
 
 # Development Environment
 
-{Describe the tools that you used to develop the software}
+- vs code
+- sqlite
 
-{Describe the programming language that you used and any libraries.}
+-python
+-SQL
 
 # Useful Websites
 
 {Make a list of websites that you found helpful in this project}
-* [Web Site Name](http://url.link.goes.here)
-* [Web Site Name](http://url.link.goes.here)
+* [Tutorials Point](https://www.tutorialspoint.com/sqlite/sqlite_python.htm)
+* [sqlite tutorial](www.sqlitetutorial.net)
 
 # Future Work
 
-{Make a list of things that you need to fix, improve, and add in the future.}
-* Item 1
-* Item 2
-* Item 3
+* more instruction
+* error prevention
+* better interface
